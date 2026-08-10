@@ -32,41 +32,67 @@ Built with:
 - Claude Desktop
 - Other MCP-compatible clients
 
-## Installation
+## ติดตั้งสำหรับผู้ใช้ (แค่ copy วาง)
 
-```bash
-npm install
-npx playwright install chromium
-npm run build
-```
+คุณ**ไม่ต้อง clone repo** — แพ็กเกจอยู่บน npm แล้ว
 
-Or run from source:
+### ขั้นตอน
 
-```bash
-npx tsx src/index.ts
-```
+1. ติดตั้งเบราว์เซอร์ของ Playwright ครั้งเดียวบนเครื่อง:
+   ```bash
+   npx playwright install chromium
+   ```
+2. เปิด AI IDE → ตั้งค่า MCP → วาง config นี้:
 
-### Cursor / Claude Desktop config
+**Cursor** (`Settings → MCP` หรือไฟล์ `~/.cursor/mcp.json`):
 
 ```json
 {
   "mcpServers": {
     "website-analyzer": {
       "command": "npx",
-      "args": ["tsx", "/absolute/path/to/website-analyzer-mcp/src/index.ts"]
+      "args": ["-y", "website-analyzer-mcp"]
     }
   }
 }
 ```
 
-After `npm run build`:
+**Claude Desktop** (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "website-analyzer": {
+      "command": "npx",
+      "args": ["-y", "website-analyzer-mcp"]
+    }
+  }
+}
+```
+
+3. รีสตาร์ท IDE / เปิด MCP ใหม่  
+4. สั่งในแชท เช่น: `วิเคราะห์ https://example.com แล้วสร้าง design.md`
+
+แค่นี้คนอื่นใช้ได้แล้ว — `npx -y` จะดาวน์โหลดแพ็กเกจจาก npm ให้อัตโนมัติ
+
+---
+
+## สำหรับนักพัฒนา (รันจาก source)
+
+```bash
+git clone https://github.com/bigy2012/website-analyzer.git
+cd website-analyzer
+npm install
+npx playwright install chromium
+npm run build
+```
 
 ```json
 {
   "mcpServers": {
     "website-analyzer": {
       "command": "node",
-      "args": ["/absolute/path/to/website-analyzer-mcp/dist/index.js"]
+      "args": ["/absolute/path/to/website-analyzer/dist/index.js"]
     }
   }
 }
