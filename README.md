@@ -32,19 +32,19 @@ Built with:
 - Claude Desktop
 - Other MCP-compatible clients
 
-## ติดตั้งสำหรับผู้ใช้ (แค่ copy วาง)
+## Install (end users)
 
-คุณ**ไม่ต้อง clone repo** — แพ็กเกจอยู่บน npm แล้ว
+You do **not** need to clone this repo — the package is on npm.
 
-### ขั้นตอน
+### Steps
 
-1. ติดตั้งเบราว์เซอร์ของ Playwright ครั้งเดียวบนเครื่อง:
+1. Install Playwright’s browser once on your machine:
    ```bash
    npx playwright install chromium
    ```
-2. เปิด AI IDE → ตั้งค่า MCP → วาง config นี้:
+2. Open your AI IDE → MCP settings → paste this config:
 
-**Cursor** (`Settings → MCP` หรือไฟล์ `~/.cursor/mcp.json`):
+**Cursor** (`Settings → MCP` or `~/.cursor/mcp.json`):
 
 ```json
 {
@@ -70,14 +70,14 @@ Built with:
 }
 ```
 
-3. รีสตาร์ท IDE / เปิด MCP ใหม่  
-4. สั่งในแชท เช่น: `วิเคราะห์ https://example.com แล้วสร้าง design.md`
+3. Restart the IDE / reload MCP  
+4. Ask in chat, for example: `Analyze https://example.com and create design.md`
 
-แค่นี้คนอื่นใช้ได้แล้ว — `npx -y` จะดาวน์โหลดแพ็กเกจจาก npm ให้อัตโนมัติ
+That’s it — `npx -y` downloads the package from npm automatically.
 
 ---
 
-## สำหรับนักพัฒนา (รันจาก source)
+## Develop from source
 
 ```bash
 git clone https://github.com/bigy2012/website-analyzer.git
@@ -175,19 +175,19 @@ npm run smoke
 npm run build
 ```
 
-## Release / แจกจ่าย
+## Release
 
-CI/CD อยู่ที่ `.github/workflows/`:
+CI/CD lives in `.github/workflows/`:
 
-- `ci.yml` — typecheck, build, test ทุก PR/push
-- `release.yml` — เมื่อ push แท็ก `v*` จะ publish ไป:
+- `ci.yml` — typecheck, build, and test on every PR/push
+- `release.yml` — on `v*` tags, publishes to:
   - **npm** (`npx website-analyzer-mcp`)
-  - **GHCR** (`ghcr.io/<owner>/website-analyzer-mcp`)
+  - **GHCR** (`ghcr.io/<owner>/website-analyzer`)
   - **GitHub Releases**
 
-คู่มือตั้งค่าครั้งแรก: [docs/RELEASE.md](docs/RELEASE.md)
+First-time setup guide: [docs/RELEASE.md](docs/RELEASE.md)
 
-หลัง publish แล้วผู้ใช้ติดตั้ง MCP ได้แบบนี้:
+After publish, users install the MCP like this:
 
 ```json
 {
