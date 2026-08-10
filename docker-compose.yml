@@ -1,0 +1,21 @@
+services:
+  website-analyzer-mcp:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      - MAX_PAGES=20
+      - REQUEST_TIMEOUT=30000
+      - MAX_DEPTH=2
+      - SCREENSHOT=true
+      - MOBILE_VIEW=true
+      - TABLET_VIEW=true
+      - DESKTOP_VIEW=true
+      - USER_AGENT=WebsiteAnalyzerMCP/1.0
+      - RESPECT_ROBOTS_TXT=true
+    volumes:
+      - ./docs:/app/docs
+      - ./output:/app/output
+
+  # Optional: pull published image instead of local build
+  # image: ghcr.io/YOUR_GITHUB_USERNAME/website-analyzer-mcp:latest

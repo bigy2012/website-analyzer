@@ -1,0 +1,10 @@
+node_modules/
+dist/
+output/
+docs/*/
+!docs/RELEASE.md
+!docs/.gitkeep
+*.png
+.DS_Store
+*.log
+.env

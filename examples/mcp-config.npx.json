@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "website-analyzer": {
+      "command": "npx",
+      "args": ["-y", "website-analyzer-mcp"]
+    }
+  }
+}
