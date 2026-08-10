@@ -36,12 +36,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tarvation/website-analyzer.git"
+    "url": "git+https://github.com/bigy2012/website-analyzer.git"
   },
   "bugs": {
-    "url": "https://github.com/tarvation/website-analyzer/issues"
+    "url": "https://github.com/bigy2012/website-analyzer/issues"
   },
-  "homepage": "https://github.com/tarvation/website-analyzer#readme",
+  "homepage": "https://github.com/bigy2012/website-analyzer#readme",
   "publishConfig": {
     "access": "public",
     "provenance": true

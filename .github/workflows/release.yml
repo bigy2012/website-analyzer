@@ -33,15 +33,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Do NOT set registry-url here — it writes an .npmrc with empty
+      # _authToken that breaks npm Trusted Publishing (OIDC) and surfaces as E404.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
 
-      - name: Upgrade npm (OIDC trusted publishing)
-        run: npm install -g npm@latest
+      - name: Ensure npm CLI supports Trusted Publishing
+        run: |
+          npm install -g npm@latest
+          npm --version
+          node --version
 
       - name: Install dependencies
         run: npm ci
@@ -76,13 +80,26 @@ jobs:
           fi
 
       - name: Publish to npm
-        # Uses npm Trusted Publishing (OIDC). Configure Trusted Publisher on npmjs.com
-        # for workflow "release.yml" + environment "release".
-        # For first-time bootstrap without OIDC, set secret NPM_TOKEN and uncomment NODE_AUTH_TOKEN.
-        run: npm publish --access public
         env:
           NPM_CONFIG_PROVENANCE: true
-          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Optional: set repo/environment secret NPM_TOKEN for first-time package create
+          # or as fallback when Trusted Publisher is not configured yet.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          rm -f .npmrc "$HOME/.npmrc"
+
+          if [ -n "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "Publishing with NPM_TOKEN (bootstrap / fallback)"
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
+            echo "registry=https://registry.npmjs.org/" >> "$HOME/.npmrc"
+            npm publish --access public
+          else
+            echo "Publishing with Trusted Publishing (OIDC)"
+            # Ensure no stale token auth masks OIDC
+            unset NODE_AUTH_TOKEN || true
+            npx -y npm@latest publish --access public
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
