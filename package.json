@@ -1,6 +1,6 @@
 {
   "name": "website-analyzer-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn any website into a reusable design system — free open-source MCP for Claude, Cursor, and other MCP clients",
   "type": "module",
   "main": "dist/index.js",
