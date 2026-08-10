@@ -10,57 +10,26 @@
 | **GitHub Releases** | ดาวน์โหลด source / release notes จากแท็ก `v*` |
 | **GHCR (Docker)** | `docker pull ghcr.io/bigy2012/website-analyzer:latest` |
 
-## แก้ error `E404` ตอน publish
+## แก้ error `ENEEDAUTH` / `npm login`
 
-ข้อความแบบนี้มัก**ไม่ใช่**ว่าไฟล์หาย แต่แปลว่า npm **ไม่ยอมให้ publish** (auth/config ผิด หรือแพ็กเกจยังไม่ถูกสร้าง):
+แปลว่า GitHub Actions **ไม่มี npm credentials**
 
-```text
-404 Not Found - PUT https://registry.npmjs.org/website-analyzer-mcp
-```
+แพ็กเกจ `website-analyzer-mcp` **ยังไม่มีบน npm** → ต้องใส่ `NPM_TOKEN` ก่อน (OIDC อย่างเดียวสร้างแพ็กเกจใหม่ไม่ได้ในเคสนี้)
 
-Checklist:
+### ตั้งค่า (ทำตามนี้)
 
-1. **`package.json` → `repository.url` ต้องตรง GitHub จริง**  
-   ตอนนี้ควรเป็น `https://github.com/bigy2012/website-analyzer.git`
-2. **Trusted Publisher บน npm** ต้องตรงทุกช่อง:
-   - Organization/user: `bigy2012`
-   - Repository: `website-analyzer` (ชื่อ repo ไม่ใช่ชื่อแพ็กเกจ)
-   - Workflow filename: `release.yml` (แค่ชื่อไฟล์)
-   - Environment: `release`
-3. **แพ็กเกจครั้งแรกยังไม่มีบน npm** → ต้อง bootstrap ด้วย `NPM_TOKEN` ครั้งหนึ่งก่อน (ด้านล่าง)
-4. อย่าใส่ `registry-url` ใน `setup-node` คู่กับ OIDC (workflow แก้แล้ว)
+1. ไปที่ https://www.npmjs.com/settings/~/tokens  
+2. **Generate New Token** → เลือก **Automation** (ไม่ใช่ Classic ที่โดนจำกัด 2FA)  
+3. คัดลอก token  
+4. ไปที่ GitHub repo → **Settings → Environments → `release`**  
+5. **Environment secrets** → New secret  
+   - Name: `NPM_TOKEN` (ตัวพิมพ์ใหญ่ตรงนี้)  
+   - Value: วาง token  
+6. Commit/push workflow ล่าสุด แล้ว **Re-run** job Release ของแท็ก `v0.1.1`
 
-## ครั้งแรก (bootstrap)
+ตรวจว่า secret อยู่ใน environment ชื่อ `release` จริง เพราะ workflow ใช้ `environment: release` — ถ้าใส่แค่ Actions repository secret บางทีก็ใช้ได้ แต่แนะนำใส่ใน environment `release` ให้ชัวร์
 
-### A) สร้าง Automation token บน npm
-
-1. เข้า [npmjs.com](https://www.npmjs.com/) → Access Tokens → Generate New Token → **Automation**
-2. ใน GitHub repo `bigy2012/website-analyzer`:  
-   Settings → Environments → `release` → Environment secrets → เพิ่ม `NPM_TOKEN`
-
-### B) Publish ครั้งแรก
-
-Push แท็กใหม่ หรือรัน Actions → Release อีกรอบ  
-Workflow จะเห็น `NPM_TOKEN` แล้ว publish แบบ token (สร้างแพ็กเกจบน npm)
-
-ตรวจ:
-
-```bash
-npm view website-analyzer-mcp version
-```
-
-### C) ตั้ง Trusted Publishing (หลังแพ็กเกจมีแล้ว)
-
-บน https://www.npmjs.com/package/website-analyzer-mcp → Settings → Trusted Publisher:
-
-| Field | Value |
-|-------|-------|
-| Organization/user | `bigy2012` |
-| Repository | `website-analyzer` |
-| Workflow filename | `release.yml` |
-| Environment | `release` |
-
-จากนั้นจะลบ `NPM_TOKEN` ออกก็ได้ — release ถัดไปใช้ OIDC
+หลัง publish สำเร็จครั้งแรก ค่อยตั้ง Trusted Publisher แล้วค่อยลบ token ได้ภายหลัง
 
 ## ปล่อยเวอร์ชันใหม่
 
