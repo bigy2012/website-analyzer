@@ -200,7 +200,24 @@ Published images (on tagged releases): `ghcr.io/<owner>/website-analyzer`
 - Optional robots.txt enforcement (`RESPECT_ROBOTS_TXT=true`)
 - Timeouts and size caps via env
 
-Intended for legitimate website analysis. Respect site terms, robots.txt, rate limits, and applicable law.
+## Responsible use
+
+Website Analyzer MCP is for **legitimate website analysis** only — for example learning layout patterns, auditing your own sites, or extracting structured signals your AI agent can reason about.
+
+Using this tool does **not** grant permission to copy or reuse another site’s design, content, images, logos, or other assets without authorization.
+
+Please respect:
+
+| | |
+|--|--|
+| **Copyright** | Design, copy, media, and branding remain owned by their rights holders |
+| **Terms of Service** | Follow each site’s ToS and acceptable-use rules |
+| **robots.txt** | Honor crawl directives (`RESPECT_ROBOTS_TXT=true` by default) |
+| **Rate limits** | Do not overload or scrape aggressively |
+| **Privacy** | Do not collect or misuse personal data |
+| **Applicable laws** | Including copyright, trademark, and computer-access laws in your jurisdiction |
+
+You are responsible for how you use analysis output. When in doubt, analyze sites you own or have permission to study, and get legal advice for commercial reuse.
 
 ## Limitations (v0.1)
 
