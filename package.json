@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/**/*.test.ts",
     "smoke": "tsx scripts/smoke.ts",
+    "demo:gif": "tsx scripts/make-demo-gif.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -54,6 +55,9 @@
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
+    "@types/pngjs": "^6.0.5",
+    "gif-encoder-2": "^1.0.5",
+    "pngjs": "^7.0.0",
     "tsx": "^4.23.11",
     "typescript": "^7.0.2"
   }

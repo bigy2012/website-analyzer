@@ -1,48 +1,56 @@
 # Website Analyzer MCP
 
-Analyze any website directly from your AI coding assistant.
+[![npm](https://img.shields.io/npm/v/website-analyzer-mcp.svg)](https://www.npmjs.com/package/website-analyzer-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen)](https://nodejs.org)
+[![CI](https://github.com/bigy2012/website-analyzer/actions/workflows/ci.yml/badge.svg)](https://github.com/bigy2012/website-analyzer/actions/workflows/ci.yml)
 
-**Turn any website into a reusable design system.**  
-Reverse-engineer websites into design rules your AI coding agent can understand.
+**Turn any website into a reusable design system.**
 
-Built with:
-- MCP
-- Playwright
-- TypeScript
+Reverse-engineer live pages into structured design tokens and docs your AI coding agent can use — colors, typography, spacing, components, layout, and responsive behavior.
 
-> Free / open source. This MCP does **not** call paid LLM APIs — it returns structured JSON (and optional template markdown) to your own Claude / Cursor / Gemini / Ollama client.
+Built with **MCP** · **Playwright** · **TypeScript**
+
+![Website Analyzer MCP demo](assets/demo.gif)
+
+> Free and open source. This server does **not** call paid LLM APIs. It returns structured JSON (and optional template markdown) to your own Claude / Cursor / VS Code / Gemini / Ollama client.
+
+---
+
+## Why this exists
+
+AI agents are great at writing UI — but they usually guess at design systems. Website Analyzer MCP inspects a real page and hands your agent:
+
+- Design tokens (color, type, spacing, radius, shadow)
+- Component and layout signals
+- Responsive viewport analysis + screenshots
+- Deterministic markdown docs (`design.md`, `rule.md`, …)
+
+Use it to clone a look, audit a site, or bootstrap a design system from production.
 
 ## Features
 
-- Website page inspection
-- DOM + CSS analysis
+- Page inspection (DOM, landmarks, headings, links, forms)
 - Color / typography / spacing extraction
 - Border radius & shadow detection
+- Layout and component signals
 - Responsive analysis (mobile / tablet / desktop)
 - Screenshot capture (up to 5 viewports)
-- Design system tokens (structured JSON)
+- Design system tokens as structured JSON
 - Deterministic markdown documentation
-- SSRF protection + robots.txt respect
+- SSRF protection + optional robots.txt respect
 
-## Supported MCP Clients
-
-- Claude Code
-- Cursor
-- VS Code
-- Claude Desktop
-- Other MCP-compatible clients
-
-## Install (end users)
+## Quick start (end users)
 
 You do **not** need to clone this repo — the package is on npm.
 
-### Steps
+1. Install Playwright’s Chromium once:
 
-1. Install Playwright’s browser once on your machine:
    ```bash
    npx playwright install chromium
    ```
-2. Open your AI IDE → MCP settings → paste this config:
+
+2. Add the MCP server in your client config.
 
 **Cursor** (`Settings → MCP` or `~/.cursor/mcp.json`):
 
@@ -70,64 +78,30 @@ You do **not** need to clone this repo — the package is on npm.
 }
 ```
 
-3. Restart the IDE / reload MCP  
-4. Ask in chat, for example: `Analyze https://example.com and create design.md`
+3. Restart the IDE / reload MCP.
+4. Ask:
 
-That’s it — `npx -y` downloads the package from npm automatically.
-
----
-
-## Develop from source
-
-```bash
-git clone https://github.com/bigy2012/website-analyzer.git
-cd website-analyzer
-npm install
-npx playwright install chromium
-npm run build
+```text
+Analyze https://example.com and create design.md
 ```
 
-```json
-{
-  "mcpServers": {
-    "website-analyzer": {
-      "command": "node",
-      "args": ["/absolute/path/to/website-analyzer/dist/index.js"]
-    }
-  }
-}
-```
+`npx -y` downloads the package from npm automatically.
 
-## Configuration
+### Supported clients
 
-Copy `.env.example` or set environment variables:
+Claude Code · Cursor · VS Code · Claude Desktop · any MCP-compatible client
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `MAX_PAGES` | `20` | Crawl page cap (v0.2+) |
-| `REQUEST_TIMEOUT` | `30000` | Navigation timeout (ms) |
-| `MAX_DEPTH` | `2` | Crawl depth (v0.2+) |
-| `SCREENSHOT` | `true` | Capture screenshots in `generate_docs` |
-| `MOBILE_VIEW` / `TABLET_VIEW` / `DESKTOP_VIEW` | `true` | Which viewport bands to sample |
-| `USER_AGENT` | `WebsiteAnalyzerMCP/1.0` | Request user agent |
-| `RESPECT_ROBOTS_TXT` | `true` | Honor robots.txt Disallow |
-| `WEBSITE_ANALYZER_OUTPUT` | package `output/` | Override default screenshot/output root |
+## Tools
 
-## Tools (v0.1)
-
-| Tool | Role |
-|------|------|
-| `inspect_page` | Structured DOM/page JSON |
-| `capture_screenshot` | `mobile.png` / `tablet.png` / `desktop.png` + viewport PNGs |
+| Tool | What it does |
+|------|----------------|
+| `inspect_page` | Structured DOM / page JSON |
+| `capture_screenshot` | Viewport PNGs (`mobile` / `tablet` / `desktop`, up to 5 widths) |
 | `analyze_design` | Colors, type, spacing, radius, shadows, layout, components → JSON |
-| `analyze_responsive` | Breakpoint / media-query analysis (+ optional shots) |
+| `analyze_responsive` | Breakpoint / media-query analysis (+ optional screenshots) |
 | `generate_docs` | Writes `design.md`, `rule.md`, `component.md`, `layout.md`, `content.md`, `README.md` |
 
-Prompt: `analyze_website_design` — guides the host LLM to interpret analyzer JSON.
-
-## Usage
-
-Ask your agent:
+### Suggested prompts
 
 ```text
 Analyze https://example.com
@@ -140,66 +114,113 @@ Create:
 - README.md
 ```
 
-Preferred flow:
+**Preferred flow**
 
 1. `inspect_page` / `analyze_design` / `analyze_responsive` → JSON for the LLM  
 2. or `generate_docs` → deterministic files under `docs/<host>/`
 
-## Security
+## Configuration
 
-- Blocks localhost / private IP / link-local / cloud metadata SSRF targets
-- Optional robots.txt enforcement (`RESPECT_ROBOTS_TXT=true`)
-- Timeouts and page caps via env
+Copy `.env.example` or set environment variables:
 
-This tool is intended for legitimate website analysis. Respect website terms, robots.txt, rate limits, and applicable laws.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MAX_PAGES` | `20` | Crawl page cap (planned multi-page crawl) |
+| `REQUEST_TIMEOUT` | `30000` | Navigation timeout (ms) |
+| `MAX_DEPTH` | `2` | Crawl depth (planned) |
+| `SCREENSHOT` | `true` | Capture screenshots in `generate_docs` |
+| `MOBILE_VIEW` / `TABLET_VIEW` / `DESKTOP_VIEW` | `true` | Which viewport bands to sample |
+| `USER_AGENT` | `WebsiteAnalyzerMCP/1.0` | Request user agent |
+| `RESPECT_ROBOTS_TXT` | `true` | Honor robots.txt Disallow |
+| `MAX_RESPONSE_SIZE` | `5000000` | Max response body size (bytes) |
+| `WEBSITE_ANALYZER_OUTPUT` | package `output/` | Override screenshot / output root |
 
-## Limitations (v0.1)
-
-- Single URL / single page (no multi-page crawler yet — planned v0.2)
-- Template docs are deterministic heuristics, not LLM-authored prose
-- Cross-origin stylesheets may be incomplete
-
-## Docker
-
-```bash
-docker compose build
-docker compose run --rm website-analyzer-mcp
-```
-
-## Development
-
-```bash
-npm run typecheck
-npm test
-npm run smoke
-npm run build
-```
-
-## Release
-
-CI/CD lives in `.github/workflows/`:
-
-- `ci.yml` — typecheck, build, and test on every PR/push
-- `release.yml` — on `v*` tags, publishes to:
-  - **npm** (`npx website-analyzer-mcp`)
-  - **GHCR** (`ghcr.io/<owner>/website-analyzer`)
-  - **GitHub Releases**
-
-First-time setup guide: [docs/RELEASE.md](docs/RELEASE.md)
-
-After publish, users install the MCP like this:
+Example with env in Cursor:
 
 ```json
 {
   "mcpServers": {
     "website-analyzer": {
       "command": "npx",
-      "args": ["-y", "website-analyzer-mcp"]
+      "args": ["-y", "website-analyzer-mcp"],
+      "env": {
+        "REQUEST_TIMEOUT": "45000",
+        "RESPECT_ROBOTS_TXT": "true"
+      }
     }
   }
 }
 ```
 
+## Develop from source
+
+```bash
+git clone https://github.com/bigy2012/website-analyzer.git
+cd website-analyzer
+npm install
+npx playwright install chromium
+npm run build
+```
+
+Point your MCP client at the built entrypoint:
+
+```json
+{
+  "mcpServers": {
+    "website-analyzer": {
+      "command": "node",
+      "args": ["/absolute/path/to/website-analyzer/dist/index.js"]
+    }
+  }
+}
+```
+
+### Scripts
+
+```bash
+npm run typecheck
+npm test
+npm run smoke
+npm run build
+npm run demo:gif   # regenerates assets/demo.gif
+```
+
+### Docker
+
+```bash
+docker compose build
+docker compose run --rm website-analyzer-mcp
+```
+
+Published images (on tagged releases): `ghcr.io/<owner>/website-analyzer`
+
+## Security
+
+- Blocks localhost / private IP / link-local / cloud metadata SSRF targets
+- Optional robots.txt enforcement (`RESPECT_ROBOTS_TXT=true`)
+- Timeouts and size caps via env
+
+Intended for legitimate website analysis. Respect site terms, robots.txt, rate limits, and applicable law.
+
+## Limitations (v0.1)
+
+- Single URL / single page (multi-page crawler planned)
+- Template docs are deterministic heuristics, not LLM-authored prose
+- Cross-origin stylesheets may be incomplete
+
+## Release
+
+CI/CD lives in `.github/workflows/`:
+
+- `ci.yml` — typecheck, build, and test on PR/push
+- `release.yml` — on `v*` tags, publishes to npm, GHCR, and GitHub Releases
+
+Setup guide: [docs/RELEASE.md](docs/RELEASE.md)
+
+## Contributing
+
+Issues and PRs are welcome. Please keep changes focused, add/adjust tests when touching security or analyzers, and run `npm run typecheck && npm test` before opening a PR.
+
 ## License
 
-MIT
+[MIT](LICENSE)
